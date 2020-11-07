@@ -50,9 +50,15 @@ def proc_install_rubocop # rubocop:disable Metrics/MethodLength
   bundle_install
   git_commit "Install rubocop", with_rubocop: false
 
+  # fetch rails/rails/.rubocop
+  rails_rubocop_file = ".rubocop-#{Rails.version.gsub(".", "-")}.yml"
+  run "curl -L https://raw.githubusercontent.com/rails/rails/v#{Rails.version}/.rubocop.yml > #{rails_rubocop_file}"
+  # replace old cop
+  gsub_file(rails_rubocop_file, "Layout/Tab", "Layout/IndentationStyle")
+
   create_file ".rubocop.yml", <<~RUBOCOP_YML
     inherit_from:
-      - https://raw.githubusercontent.com/rails/rails/v#{Rails.version}/.rubocop.yml
+      - #{rails_rubocop_file}
 
     AllCops:
       Exclude:
