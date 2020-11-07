@@ -52,7 +52,7 @@ def proc_install_rubocop # rubocop:disable Metrics/MethodLength
 
   create_file ".rubocop.yml", <<~RUBOCOP_YML
     inherit_from:
-      - https://raw.githubusercontent.com/rails/rails/master/.rubocop.yml
+      - https://raw.githubusercontent.com/rails/rails/v#{Rails.version}/.rubocop.yml
 
     AllCops:
       Exclude:
