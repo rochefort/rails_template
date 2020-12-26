@@ -44,6 +44,7 @@ end
 def proc_install_rubocop # rubocop:disable Metrics/MethodLength
   gem_group :development do
     gem "rubocop", require: false
+    gem "rubocop-packaging", require: false if Rails.version >= "6.1.0"
     gem "rubocop-performance", require: false
     gem "rubocop-rails", require: false
   end
@@ -131,6 +132,7 @@ def proc_localize
 end
 
 def proc_setup_railties # rubocop:disable Metrics/MethodLength
+  # https://github.com/rails/rails/blob/master/railties/lib/rails/all.rb
   default_railties = %w[
     active_record/railtie
     active_storage/engine
@@ -156,8 +158,8 @@ def proc_setup_railties # rubocop:disable Metrics/MethodLength
   diff_railties = default_railties - my_railties
   return if diff_railties.empty?
 
-  comment_lines "config/application.rb", "require 'rails/all'"
-  inject_into_file "config/application.rb", after: "# require 'rails/all'" do
+  comment_lines "config/application.rb", 'require "rails/all"'
+  inject_into_file "config/application.rb", after: '# require "rails/all"' do
     my_railties.map { |railtie| "require \"#{railtie}\"" }.join("\n")
   end
   git_commit "Disable #{diff_railties.join(', ')}"
